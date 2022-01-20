@@ -4,7 +4,7 @@ const FOLDER_SIZE = 60;
 const TITLE_ID_SIZE = 16;
 
 const extractIdsFromFile = (file) => {
-  const fileString = file.toString();
+  const fileString = file.toString().replaceAll('\r', '');
   const folders = fileString.split('\n\n');
   return folders.reduce((prev, curr) => {
     const ids = curr.split('\n').filter((str) => str !== '');
@@ -27,7 +27,6 @@ const findFolderIndex = (buffer, folderName) => {
 }
 
 const writeAddr = (writeBuf, addr, buf) => {
-  console.log(buf.length, buf, addr.toString(16), buf.toString('hex'));
   return writeBuf.set(buf, addr);
 }
 
@@ -36,12 +35,11 @@ const replacementIds = fs.readFileSync('./games');
 
 const ids = extractIdsFromFile(replacementIds);
 
-
 ids.forEach((folder) => {
   const addr = findFolderIndex(file, folder.name);
-  console.log(folder.name, addr.toString(16));
+
   folder.titles.forEach((title, index) => {
-    console.log(writeAddr(file, getWriteAddress(addr, index), title));
+    writeAddr(file, getWriteAddress(addr, index), title);
   });
 });
 
